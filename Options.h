@@ -83,6 +83,8 @@ public:
                 return "FIFO";
             case 2:
                 return "Optimal";
+            default:
+                return "ERROR";
         }
     }
 
