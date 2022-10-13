@@ -8,29 +8,45 @@
 #include <queue>
 #include <list>
 #include <cstdlib>
+#include <ostream>
 #include "Block.h"
+#include "Set.h"
+#include "Stats.h"
+
+#define LRU 0
+#define FIFO 1
+#define OPTIMAL 2
 
 using namespace std;
 
 class Cache {
 public:
-    Cache(int size, int blocksize, int assoc, int repl_policy);
-    void write(int address);
-    Block* checkForHit(int set, int tag);
+    Cache(string cache_lvl, int size, int blocksize, int assoc, int repl_policy, int incl_policy);
+    void write(unsigned int address);
+    void read(unsigned int address);
+    void invalidate(unsigned int address);
+    void set_next_lvl(Cache* l2);
+    void set_prev_lvl(Cache* l1);
+    static string to_hex(unsigned int val);
+
+    friend ostream &operator<<(ostream &os, const Cache &cache);
 
 private:
-    Block** cache;
+    Set** cache;
     int size;
     int blocksize;
     int assoc;
     int repl_policy;
-    int offset_mask;
-    int index_mask;
-    int tag_mask;
-    list<int> repl;
+    int incl_policy;
+    unsigned int offset_mask = 0;
+    unsigned int index_mask = 0;
+    unsigned int tag_mask = 0;
     int offset_bits;
     int index_bits;
-
+    string cache_lvl;
+    Stats* stats;
+    Cache* previous_lvl = nullptr;
+    Cache* next_lvl = nullptr;
 
 };
 
