@@ -6,12 +6,11 @@
 #define MP1_CACHE_STATS_H
 
 typedef struct Stats {
-    int reads = 0;
-    int read_misses = 0;
-    int writes = 0;
-    int write_misses = 0;
-    int write_backs = 0;
-    int write_back_to_main_mem = 0;
+    int reads;
+    int read_misses;
+    int writes;
+    int write_misses;
+    int write_backs;
 }Stats;
 
 #endif //MP1_CACHE_STATS_H

@@ -5,7 +5,6 @@
 #ifndef MP1_CACHE_BLOCK_H
 #define MP1_CACHE_BLOCK_H
 typedef struct Block {
-    int size;
     unsigned int tag;
     bool dirty;
     bool valid;

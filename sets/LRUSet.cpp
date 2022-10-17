@@ -7,12 +7,10 @@
 #include <iostream>
 #include "LRUSet.h"
 
-LRUSet::LRUSet(int assoc, int blocksize) {
+LRUSet::LRUSet(int assoc) {
     this->assoc = assoc;
-    this->blocksize = blocksize;
     blocks = (Block*) calloc(assoc, sizeof(Block));
-    for(int i = 0; i < assoc; i++) {
-        blocks[i].size = blocksize;
+    for(int i = 0; i < this->assoc; i++) {
         blocks[i].valid = false;
         blocks[i].dirty = false;
     }
@@ -65,7 +63,7 @@ Block *LRUSet::select_victim() {
 }
 
 Block *LRUSet::find_invalid_block(string cache_lvl) {
-    for(int i = 0; i < assoc; i++) {
+    for(int i = 0; i < this->assoc; i++) {
         if(!blocks[i].valid) {
             cout << cache_lvl << " victim: none" << endl;
             return blocks + i;

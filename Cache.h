@@ -21,7 +21,7 @@ using namespace std;
 
 class Cache {
 public:
-    Cache(string cache_lvl, int size, int blocksize, int assoc, int repl_policy, int incl_policy);
+    Cache(const string& cache_lvl, int size, int blocksize, int assoc, int repl_policy, int incl_policy);
     void write(unsigned int address);
     void read(unsigned int address);
     void invalidate(unsigned int address);
@@ -33,19 +33,16 @@ public:
 
 private:
     Set** cache;
-    int size;
-    int blocksize;
-    int assoc;
     int repl_policy;
     int incl_policy;
-    unsigned int offset_mask = 0;
-    unsigned int index_mask = 0;
+    unsigned int offset_mask;
+    unsigned int index_mask;
     int offset_bits;
     int index_bits;
     string cache_lvl;
     Stats* stats;
-    Cache* previous_lvl = nullptr;
-    Cache* next_lvl = nullptr;
+    Cache* previous_lvl;
+    Cache* next_lvl;
 
 };
 

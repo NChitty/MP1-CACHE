@@ -15,7 +15,7 @@ using namespace std;
 
 class LRUSet: public Set {
 public:
-    LRUSet(int assoc, int blocksize);
+    LRUSet(int assoc);
 
     void write(string cache_lvl, Block* block, unsigned int tag) override;
 
@@ -26,8 +26,6 @@ public:
     Block *select_victim() override;
 
     Block *find_invalid_block(string cache_lvl) override;
-
-    Block *get_blocks() override;
 
 private:
     // stores the tag as the key and the index of the block in the list

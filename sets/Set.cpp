@@ -4,7 +4,7 @@
 #include "Set.h"
 #include "../Cache.h"
 
-bool Set::invalidate(int tag) {
+bool Set::invalidate(unsigned int tag) {
     int len = sizeof(this->blocks);
     for(int i = 0; i < len; i++) {
         if(tag == blocks[i].tag && blocks[i].valid) {

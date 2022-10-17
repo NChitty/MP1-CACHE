@@ -27,8 +27,8 @@ int main(int argc, char **argv) {
         unsigned int mem_op = 1;
         while(trace_file) {
             getline (trace_file, current_line);
-            if(current_line.size()==0) break;
-            int index = current_line.find(' ');
+            if(current_line.empty()) break;
+            size_t index = current_line.find(' ');
             int read_write = current_line.substr(0, index) == "r" ? 0 : 1;
             string address = current_line.substr(index+1);
             unsigned int addr = conv_addr(address);

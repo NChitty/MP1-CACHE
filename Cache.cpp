@@ -8,19 +8,27 @@
 
 const char hex_map[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
-Cache::Cache(string cache_lvl, int blocksize, int size, int assoc, int repl_policy, int incl_policy) : cache_lvl(cache_lvl), blocksize(blocksize), size(size), assoc(assoc), repl_policy(repl_policy), incl_policy(incl_policy) {
-    stats = (Stats*) calloc(1, sizeof(stats));
+Cache::Cache(const string& cache_lvl, int blocksize, int size, int assoc, int repl_policy, int incl_policy) : cache_lvl(cache_lvl), repl_policy(repl_policy), incl_policy(incl_policy) {
+    stats = (Stats*) calloc(1, sizeof(Stats));
     int sets = size/(blocksize*assoc);
     switch(repl_policy) {
         case LRU:
             cache = (Set**) calloc(sets, sizeof(LRUSet*));
             for(int i = 0; i < sets; i++) {
-                cache[i] = new LRUSet(assoc, blocksize);
+                cache[i] = new LRUSet(assoc);
             }
+            break;
+        case FIFO:
+            break;
+        case OPTIMAL:
+            break;
+        default:
             break;
     }
     index_bits = log2(sets);
     offset_bits = log2(blocksize);
+    index_mask = 0;
+    offset_mask = 0;
     for(int i = 0; i < this->index_bits; i++) {
         index_mask <<= 1;
         index_mask |= 1;
@@ -65,7 +73,7 @@ void Cache::write(unsigned int address) {
             if(victim->dirty) {
                 stats->write_backs++;
                 if(next_lvl != nullptr) {
-                    unsigned int victim_addr = ((victim->tag << index_bits) | index) << offset_bits + offset;
+                    unsigned int victim_addr = (((victim->tag << index_bits) | index) << offset_bits) + offset;
                     next_lvl->write(victim_addr);
                 }
             } else {
@@ -73,7 +81,7 @@ void Cache::write(unsigned int address) {
             }
 
             if(incl_policy == 1 && next_lvl == nullptr) {
-                unsigned int victim_addr = ((victim->tag << index_bits) | index) << offset_bits + offset;
+                unsigned int victim_addr = (((victim->tag << index_bits) | index) << offset_bits) + offset;
                 next_lvl->invalidate(victim_addr);
             }
         }
@@ -149,18 +157,13 @@ void Cache::read(unsigned int address) {
 }
 
 void Cache::invalidate(unsigned int address) {
-    unsigned int index = 0;
-    unsigned int addr = address;
-    unsigned int offset = address & this->offset_mask;
     address >>= this->offset_bits;
-    if(assoc != 1) {
-        index = (address & this->index_mask);
-        address >>= this->index_bits;
-    }
+    unsigned int index = (address & this->index_mask);
+    address >>= this->index_bits;
     unsigned int tag = address;
 
     if(cache[index]->invalidate(tag)) {
-        stats->write_back_to_main_mem++;
+        // write back to main
     }
 }
 
