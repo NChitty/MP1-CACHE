@@ -9,9 +9,9 @@
 #include <list>
 #include <cstdlib>
 #include <ostream>
-#include "Block.h"
-#include "Set.h"
-#include "Stats.h"
+#include "structs/Block.h"
+#include "sets/Set.h"
+#include "structs/Stats.h"
 
 #define LRU 0
 #define FIFO 1
@@ -40,7 +40,6 @@ private:
     int incl_policy;
     unsigned int offset_mask = 0;
     unsigned int index_mask = 0;
-    unsigned int tag_mask = 0;
     int offset_bits;
     int index_bits;
     string cache_lvl;
