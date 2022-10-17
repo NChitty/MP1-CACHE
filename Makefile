@@ -3,7 +3,7 @@ OPT = -O3
 WARN = -Wall
 CFLAGS = $(OPT) $(WARN) $(INC) $(LIB)
 
-SIM_SRC = main.cpp Set.cpp LRUSet.cpp Cache.cpp
+SIM_SRC = main.cpp sets/Set.cpp sets/LRUSet.cpp Cache.cpp
 
 SIM_OBJ = main.o Set.o LRUSet.o Cache.o
 
