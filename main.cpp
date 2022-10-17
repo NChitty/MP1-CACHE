@@ -44,10 +44,10 @@ int main(int argc, char **argv) {
                 l1->read(addr);
             }
         }
-        cout << l1; // TODO fix output
+        cout << *l1; // TODO fix output
         // TODO find bug in victim address thing
         // TODO implement other replacement policies
-        if(l2 != nullptr) cout << l2;
+        if(l2 != nullptr) cout << *l2;
     }
     return 0;
 }
