@@ -8,5 +8,6 @@ typedef struct Block {
     unsigned int tag;
     bool dirty;
     bool valid;
+    int repl_val;
 }Block;
 #endif //MP1_CACHE_BLOCK_H
