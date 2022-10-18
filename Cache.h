@@ -10,7 +10,7 @@
 #include <cstdlib>
 #include <ostream>
 #include "structs/Block.h"
-#include "sets/Set.h"
+#include "Set.h"
 #include "structs/Stats.h"
 
 #define LRU 0
@@ -27,6 +27,7 @@ public:
     void invalidate(unsigned int address);
     void set_next_lvl(Cache* l2);
     void set_prev_lvl(Cache* l1);
+    Stats get_stats();
     static string to_hex(unsigned int val);
 
     friend ostream &operator<<(ostream &os, const Cache &cache);

@@ -4,7 +4,8 @@
 #include <cmath>
 #include <iostream>
 #include "Cache.h"
-#include "sets/LRUSet.h"
+#include "LRUSet.h"
+#include "FIFOSet.h"
 
 const char hex_map[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
@@ -19,23 +20,27 @@ Cache::Cache(const string& cache_lvl, int blocksize, int size, int assoc, int re
             }
             break;
         case FIFO:
+            cache = (Set**) calloc(sets, sizeof(FIFOSet*));
+            for(int i = 0; i < sets; i++) {
+                cache[i] = new FIFOSet(assoc);
+            }
             break;
         case OPTIMAL:
             break;
         default:
             break;
     }
-    index_bits = log2(sets);
-    offset_bits = log2(blocksize);
-    index_mask = 0;
-    offset_mask = 0;
+    this->index_bits = log2(sets);
+    this->offset_bits = log2(blocksize);
+    this->index_mask = 0;
+    this->offset_mask = 0;
     for(int i = 0; i < this->index_bits; i++) {
-        index_mask <<= 1;
-        index_mask |= 1;
+        this->index_mask <<= 1;
+        this->index_mask |= 1;
     }
     for(int i = 0; i < offset_bits; i++) {
-        offset_mask <<= 1;
-        offset_mask |= 1;
+        this->offset_mask <<= 1;
+        this->offset_mask |= 1;
     }
 }
 
@@ -67,13 +72,17 @@ void Cache::write(unsigned int address) {
             victim = cache[index]->select_victim();
 
             cout << cache_lvl << " victim: " << to_hex(((((0 | victim->tag) << index_bits) | index)
-                    << offset_bits) + offset) << " (tag " << to_hex(victim->tag)
+                    << offset_bits)) << " (tag " << to_hex(victim->tag)
                  << ", index " << index << ", " << (victim->dirty ? "dirty)" : "clean)") << endl;
 
             if(victim->dirty) {
                 stats->write_backs++;
                 if(next_lvl != nullptr) {
-                    unsigned int victim_addr = (((victim->tag << index_bits) | index) << offset_bits) + offset;
+                    unsigned int victim_addr = victim->tag;
+                    victim_addr <<= index_bits;
+                    victim_addr |= index;
+                    victim_addr <<= offset_bits;
+                    victim_addr |= offset;
                     next_lvl->write(victim_addr);
                 }
             } else {
@@ -81,7 +90,11 @@ void Cache::write(unsigned int address) {
             }
 
             if(incl_policy == 1 && next_lvl == nullptr) {
-                unsigned int victim_addr = (((victim->tag << index_bits) | index) << offset_bits) + offset;
+                unsigned int victim_addr = victim->tag;
+                victim_addr <<= index_bits;
+                victim_addr |= index;
+                victim_addr <<= offset_bits;
+                victim_addr |= offset;
                 next_lvl->invalidate(victim_addr);
             }
         }
@@ -90,10 +103,11 @@ void Cache::write(unsigned int address) {
             if(repl_policy == 2) {
 
             } else {
-                next_lvl->read(address);
+                next_lvl->read(addr + offset);
             }
         }
         cache[index]->write(cache_lvl, victim, tag);
+        cout << cache_lvl << " set dirty" << endl;
         victim->dirty = true;
     }
 }
@@ -107,6 +121,8 @@ void Cache::read(unsigned int address) {
     unsigned int tag = address;
 
     cout << cache_lvl << " read : "<< to_hex(addr) << " (tag " << to_hex(tag) << ", index " << index << ")" << endl;
+
+    stats->reads++;
 
     Block* block = cache[index]->check_for_hit(cache_lvl, tag);
 
@@ -124,10 +140,11 @@ void Cache::read(unsigned int address) {
             if (victim_block->dirty) {
                 stats->write_backs++;
                 if (next_lvl != nullptr) {
-                    unsigned int victim_addr =
-                            ((((0 | victim_block->tag) << (32 - next_lvl->index_bits - next_lvl->offset_bits)) | index)
-                                    << next_lvl->index_bits)
-                            + offset;
+                    unsigned int victim_addr = victim_block->tag;
+                    victim_addr <<= index_bits;
+                    victim_addr |= index;
+                    victim_addr <<= offset_bits;
+                    victim_addr |= offset;
                     next_lvl->write(victim_addr);
                 }
                 victim_block->dirty = false;
@@ -137,11 +154,11 @@ void Cache::read(unsigned int address) {
             }
 
             if (incl_policy == 1 && next_lvl == nullptr) {
-                unsigned int victim_addr =
-                        (((0 | victim_block->tag) << (32 - previous_lvl->index_bits - previous_lvl->offset_bits) |
-                          index)
-                                << previous_lvl->index_bits)
-                        + offset;
+                unsigned int victim_addr = victim_block->tag;
+                victim_addr <<= index_bits;
+                victim_addr |= index;
+                victim_addr <<= offset_bits;
+                victim_addr |= offset;
                 previous_lvl->invalidate(victim_addr);
             }
         }
@@ -149,7 +166,7 @@ void Cache::read(unsigned int address) {
         if (next_lvl != nullptr) {
             if (repl_policy == 2) {
             } else {
-                next_lvl->read(address);
+                next_lvl->read(addr  + offset);
             }
         }
         cache[index]->read(cache_lvl, victim_block, tag);
@@ -175,6 +192,10 @@ void Cache::set_prev_lvl(Cache *l1) {
     this->previous_lvl = l1;
 }
 
+Stats Cache::get_stats() {
+    return *this->stats;
+}
+
  string Cache::to_hex(unsigned int val) {
     string chars = "00000000";
     int index = 7;
@@ -191,7 +212,6 @@ ostream &operator<<(ostream &os, const Cache &cache) {
     for(int i = 0; i < pow(2, cache.index_bits); i++) {
         os << "Set     "<< i << ": " << *(cache.cache[i]) << endl;
     }
-    os << endl;
     return os;
 }
 
