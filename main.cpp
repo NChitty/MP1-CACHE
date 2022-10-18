@@ -96,7 +96,7 @@ void print_sim_results(Cache* l1, Cache* l2) {
                  << l2->get_stats().read_misses + l2->get_stats().write_misses + l2->get_stats().write_backs  << endl;
         else
             cout << "m. total memory traffic:       "
-                 << l1->get_stats().read_misses + l1->get_stats().write_misses + l1->get_stats().write_backs << endl;
+                 << l2->get_stats().read_misses + l2->get_stats().write_misses + l2->get_stats().write_backs << endl;
     } else {
         cout << "g. number of L2 reads:         " << 0 << endl;
         cout << "h. number of L2 read misses:   " << 0 << endl;
