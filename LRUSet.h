@@ -9,7 +9,7 @@
 #include <unordered_map>
 #include <list>
 #include "Set.h"
-#include "../Cache.h"
+#include "Cache.h"
 
 using namespace std;
 
@@ -28,10 +28,7 @@ public:
     Block *find_invalid_block(string cache_lvl) override;
 
 private:
-    // stores the tag as the key and the index of the block in the list
-    unordered_map<int, int> block_map;
-    // stores the tags in the order of their usage
-    list<int> lru_list;
+    int lru_val;
 };
 
 

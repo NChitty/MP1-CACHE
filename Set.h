@@ -7,7 +7,7 @@
 
 #include <string>
 #include <ostream>
-#include "../structs/Block.h"
+#include "structs/Block.h"
 
 using namespace std;
 class Set {
