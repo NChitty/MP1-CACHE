@@ -38,8 +38,10 @@ Block *FIFOSet::check_for_hit(string cache_lvl, unsigned int tag) {
     for(int i = 0; i < this->assoc; i++) {
         if(blocks[i].tag == tag) {
             cout << cache_lvl << " hit" << endl;
+            // I do not understand why we would update fifo
+            // on a hit but it works
             cout << cache_lvl << " update FIFO" << endl;
-            blocks[i].repl_val = ++this->fifo_val;
+            // commented out updating the repl value
             return &(blocks[i]);
         }
     }
