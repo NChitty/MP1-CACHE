@@ -91,7 +91,7 @@ void Cache::write(unsigned int address) {
             if(incl_policy == 1 && next_lvl == nullptr) {
                 unsigned int victim_addr;
                 this->encode_address(&victim_addr, victim->tag, index, offset);
-                next_lvl->invalidate(victim_addr);
+                previous_lvl->invalidate(victim_addr);
             }
         }
 
@@ -153,7 +153,7 @@ void Cache::read(unsigned int address) {
     }
 }
 
-void Cache::decode_address(unsigned int address, unsigned int *tag, unsigned int *index, unsigned int *offset) {
+void Cache::decode_address(unsigned int address, unsigned int *tag, unsigned int *index, unsigned int *offset) const {
     *offset = address & this->offset_mask;
     address >>= this->offset_bits;
     *index = (address & this->index_mask);
@@ -161,7 +161,7 @@ void Cache::decode_address(unsigned int address, unsigned int *tag, unsigned int
     *tag = address;
 }
 
-void Cache::encode_address(unsigned int* address, unsigned int tag, unsigned int index, unsigned int offset) {
+void Cache::encode_address(unsigned int* address, unsigned int tag, unsigned int index, unsigned int offset) const {
     *address = tag;
     *address <<= this->index_bits;
     *address |= index;
@@ -169,15 +169,14 @@ void Cache::encode_address(unsigned int* address, unsigned int tag, unsigned int
     *address |= offset;
 }
 
-// TODO output invalidation in correct places
-// TODO correct writeback total in l2 for incl = 1
-
 void Cache::invalidate(unsigned int address) {
     unsigned int tag, index, offset;
     this->decode_address(address, &tag, &index, &offset);
-    if(cache[index]->invalidate(tag)) {
-        // write back to main
+    if(cache[index]->invalidate(*this, tag, index)) {
+        // write back to main mem
         if(next_lvl != nullptr) {
+            next_lvl->stats->write_backs--;
+            this->stats->write_to_mem++;
             cout << "L1 writeback to main memory directly" << endl;
         }
     }

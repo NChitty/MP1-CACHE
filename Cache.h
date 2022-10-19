@@ -10,7 +10,6 @@
 #include <cstdlib>
 #include <ostream>
 #include "structs/Block.h"
-#include "Set.h"
 #include "structs/Stats.h"
 
 #define LRU 0
@@ -18,7 +17,7 @@
 #define OPTIMAL 2
 
 using namespace std;
-
+class Set;
 class Cache {
 public:
     Cache(const string& cache_lvl, int size, int blocksize, int assoc, int repl_policy, int incl_policy);
@@ -28,8 +27,8 @@ public:
     void set_next_lvl(Cache* l2);
     void set_prev_lvl(Cache* l1);
     Stats get_stats();
-    void decode_address(unsigned int address, unsigned int* tag, unsigned int* index, unsigned int* offset);
-    void encode_address(unsigned int* address, unsigned int tag, unsigned int index, unsigned int offset);
+    void decode_address(unsigned int address, unsigned int* tag, unsigned int* index, unsigned int* offset) const;
+    void encode_address(unsigned int* address, unsigned int tag, unsigned int index, unsigned int offset) const;
     Set * get_set(unsigned int index);
     static string to_hex(unsigned int val);
 
