@@ -3,9 +3,9 @@ OPT = -O3
 WARN = -Wall
 CFLAGS = $(OPT) $(WARN) $(INC) $(LIB)
 
-SIM_SRC = main.cpp Set.cpp FIFOSet.cpp LRUSet.cpp Cache.cpp
+SIM_SRC = main.cpp Set.cpp FIFOSet.cpp OptimalSet.cpp LRUSet.cpp Cache.cpp
 
-SIM_OBJ = main.o Set.o FIFOSet.o LRUSet.o Cache.o
+SIM_OBJ = main.o Set.o FIFOSet.o OptimalSet.o LRUSet.o Cache.o
 
 all: sim_cache
 		@echo "Finished compiling cache simulator"
