@@ -7,10 +7,15 @@
 
 using namespace std;
 
-bool Set::invalidate(unsigned int tag) {
+bool Set::invalidate(Cache cache, unsigned int tag, unsigned int index) {
     int len = sizeof(this->blocks);
     for(int i = 0; i < len; i++) {
         if(tag == blocks[i].tag && blocks[i].valid) {
+            unsigned int address;
+            cache.encode_address(&address, tag, index, 0);
+            cout << "L1 invalidated: " << Cache::to_hex(address)
+                 << "(tag " << Cache::to_hex(tag) << ", index " << index << ", "
+                 << (blocks[i].dirty ? "dirty)" : "clean)") << endl;
             blocks[i].valid = false;
             bool ret = blocks[i].dirty;
             blocks[i].dirty = false;
