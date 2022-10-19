@@ -11,6 +11,7 @@ typedef struct Stats {
     int writes;
     int write_misses;
     int write_backs;
+    int write_to_mem;
 }Stats;
 
 #endif //MP1_CACHE_STATS_H
