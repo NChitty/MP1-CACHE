@@ -24,6 +24,7 @@ int main(int argc, char **argv) {
         l2->set_next_lvl(nullptr);
     }
     l1->set_next_lvl(l2);
+    l1->set_prev_lvl(nullptr);
     ifstream trace_file (options->trace_file());
     string current_line;
     // preprocess
@@ -33,7 +34,6 @@ int main(int argc, char **argv) {
                 getline(trace_file, current_line);
                 if (current_line.empty()) break;
                 size_t index = current_line.find(' ');
-                int read_write = current_line.substr(0, index) == "r" ? 0 : 1;
                 string address = current_line.substr(index + 1);
                 unsigned int addr = conv_addr(address);
                 unsigned int tag, set, offset;
@@ -117,7 +117,7 @@ void print_sim_results(Cache* l1, Cache* l2) {
                  << l2->get_stats().read_misses + l2->get_stats().write_misses + l2->get_stats().write_backs  << endl;
         else
             cout << "m. total memory traffic:       "
-                 << l2->get_stats().read_misses + l2->get_stats().write_misses + l2->get_stats().write_backs << endl;
+                 << l2->get_stats().read_misses + l2->get_stats().write_misses + l2->get_stats().write_backs + l1->get_stats().write_to_mem << endl;
     } else {
         cout << "g. number of L2 reads:         " << 0 << endl;
         cout << "h. number of L2 read misses:   " << 0 << endl;
