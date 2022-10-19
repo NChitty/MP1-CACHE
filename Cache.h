@@ -28,6 +28,9 @@ public:
     void set_next_lvl(Cache* l2);
     void set_prev_lvl(Cache* l1);
     Stats get_stats();
+    void decode_address(unsigned int address, unsigned int* tag, unsigned int* index, unsigned int* offset);
+    void encode_address(unsigned int* address, unsigned int tag, unsigned int index, unsigned int offset);
+    Set * get_set(unsigned int index);
     static string to_hex(unsigned int val);
 
     friend ostream &operator<<(ostream &os, const Cache &cache);
