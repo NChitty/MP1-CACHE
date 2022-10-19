@@ -36,7 +36,7 @@ void FIFOSet::read(string cache_lvl, Block *block, unsigned int tag) {
 
 Block *FIFOSet::check_for_hit(string cache_lvl, unsigned int tag) {
     for(int i = 0; i < this->assoc; i++) {
-        if(blocks[i].tag == tag) {
+        if(blocks[i].tag == tag && blocks[i].valid) {
             cout << cache_lvl << " hit" << endl;
             // I do not understand why we would update fifo
             // on a hit but it works
@@ -59,14 +59,4 @@ Block *FIFOSet::select_victim() {
         }
     }
     return blocks + index;
-}
-
-Block *FIFOSet::find_invalid_block(string cache_lvl) {
-    for(int i = 0; i < this->assoc; i++) {
-        if(!blocks[i].valid) {
-            cout << cache_lvl << " victim: none" << endl;
-            return &(blocks[i]);
-        }
-    }
-    return nullptr;
 }

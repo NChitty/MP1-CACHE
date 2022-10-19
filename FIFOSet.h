@@ -20,8 +20,6 @@ public:
 
     Block *select_victim() override;
 
-    Block *find_invalid_block(string cache_lvl) override;
-
 private:
     int fifo_val;
 

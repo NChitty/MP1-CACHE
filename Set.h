@@ -16,7 +16,7 @@ public:
     virtual void read(string cache_lvl,Block* block, unsigned int tag) = 0;
     virtual Block* check_for_hit(string cache_lvl, unsigned int tag) = 0;
     virtual Block* select_victim() = 0;
-    virtual Block* find_invalid_block(string cache_lvl) = 0;
+    Block* find_invalid_block(string cache_lvl);
     bool invalidate(unsigned int tag);
 
     friend ostream &operator<<(ostream &os, const Set &set);

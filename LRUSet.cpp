@@ -36,7 +36,7 @@ void LRUSet::read(string cache_lvl, Block* victim, unsigned int tag) {
 
 Block *LRUSet::check_for_hit(string cache_lvl, unsigned int tag) {
     for(int i = 0; i < this->assoc; i++) {
-        if(blocks[i].tag == tag) {
+        if(blocks[i].tag == tag && blocks[i].valid) {
             cout << cache_lvl << " hit" << endl;
             blocks[i].repl_val = ++this->lru_val;
             cout << cache_lvl << " update LRU" << endl;
@@ -59,12 +59,3 @@ Block *LRUSet::select_victim() {
     return blocks + index;
 }
 
-Block *LRUSet::find_invalid_block(string cache_lvl) {
-    for(int i = 0; i < this->assoc; i++) {
-        if(!blocks[i].valid) {
-            cout << cache_lvl << " victim: none" << endl;
-            return &(blocks[i]);
-        }
-    }
-    return nullptr;
-}
