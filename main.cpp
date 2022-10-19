@@ -3,6 +3,7 @@
 #include <fstream>
 #include "Options.h"
 #include "Cache.h"
+#include "OptimalSet.h"
 
 using namespace std;
 
@@ -25,6 +26,24 @@ int main(int argc, char **argv) {
     l1->set_next_lvl(l2);
     ifstream trace_file (options->trace_file());
     string current_line;
+    // preprocess
+    if(options->replacement_policy() == 2) {
+        if(trace_file.is_open()) {
+            while(trace_file) {
+                getline(trace_file, current_line);
+                if (current_line.empty()) break;
+                size_t index = current_line.find(' ');
+                int read_write = current_line.substr(0, index) == "r" ? 0 : 1;
+                string address = current_line.substr(index + 1);
+                unsigned int addr = conv_addr(address);
+                unsigned int tag, set, offset;
+                l1->decode_address(addr, &tag, &set, &offset);
+                ((OptimalSet*) l1->get_set(set))->add_to_vector(tag);
+            }
+        }
+        trace_file.clear();
+        trace_file.seekg(0);
+    }
     if(trace_file.is_open()) {
         unsigned int mem_op = 1;
         while(trace_file) {
@@ -46,10 +65,12 @@ int main(int argc, char **argv) {
                 l1->read(addr);
             }
         }
-        cout << *l1;
-        if(l2 != nullptr) cout << *l2;
-        print_sim_results(l1, l2);
+        trace_file.clear();
+        trace_file.seekg(0);
     }
+    cout << *l1;
+    if(l2 != nullptr) cout << *l2;
+    print_sim_results(l1, l2);
     return 0;
 }
 
