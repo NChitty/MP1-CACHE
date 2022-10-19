@@ -169,14 +169,17 @@ void Cache::encode_address(unsigned int* address, unsigned int tag, unsigned int
     *address |= offset;
 }
 
-void Cache::invalidate(unsigned int address) {
-    address >>= this->offset_bits;
-    unsigned int index = (address & this->index_mask);
-    address >>= this->index_bits;
-    unsigned int tag = address;
+// TODO output invalidation in correct places
+// TODO correct writeback total in l2 for incl = 1
 
+void Cache::invalidate(unsigned int address) {
+    unsigned int tag, index, offset;
+    this->decode_address(address, &tag, &index, &offset);
     if(cache[index]->invalidate(tag)) {
         // write back to main
+        if(next_lvl != nullptr) {
+            cout << "L1 writeback to main memory directly" << endl;
+        }
     }
 }
 
