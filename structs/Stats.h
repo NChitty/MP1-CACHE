@@ -5,6 +5,10 @@
 #ifndef MP1_CACHE_STATS_H
 #define MP1_CACHE_STATS_H
 
+/**
+ * Simply a struct for keeping track of the simulation
+ * results without bloating the Cache class
+ */
 typedef struct Stats {
     int reads;
     int read_misses;
